@@ -1,0 +1,31 @@
+{
+  "name": "nt-cli",
+  "description": "CLI for reading, writing, and hash checking torrents",
+  "keywords": [
+    "torrent",
+    "bittorremt",
+    "file"
+  ],
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fent/node-torrent-cli.git"
+  },
+  "author": "Roly Fentanes (https://github.com/fent)",
+  "bin": {
+    "nt": "./bin/nt.js"
+  },
+  "preferGlobal": true,
+  "dependencies": {
+    "colors": "^1.0.3",
+    "nomnom": "~1.8.0",
+    "nt": "*",
+    "streamspeed": "~0.2.0"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/fent/node-torrent-cli/raw/master/LICENSE"
+    }
+  ]
+}
