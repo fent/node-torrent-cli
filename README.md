@@ -2,6 +2,8 @@
 
 Read, make, and hash check torrents with node.js in the command line!
 
+[![Dependency Status](https://gemnasium.com/fent/node-torrent-cli.svg)](https://gemnasium.com/fent/node-torrent-cli)
+
 ```bash
 Usage: nt [command]
 
