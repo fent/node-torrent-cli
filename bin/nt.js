@@ -308,7 +308,7 @@ function edit() {
     }
 
     if (options.announceList) {
-      metadata.announceList = options.announceList;
+      metadata["announce-list"] = options.announceList;
     }
 
     if (options.comment) {
