@@ -22,10 +22,5 @@
     "nt": "*",
     "streamspeed": "~0.2.0"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/fent/node-torrent-cli/raw/master/LICENSE"
-    }
-  ]
+  "license": "MIT"
 }
