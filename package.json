@@ -15,6 +15,9 @@
   "bin": {
     "nt": "./bin/nt.js"
   },
+  "files": [
+    "bin"
+  ],
   "preferGlobal": true,
   "dependencies": {
     "colors": "^1.0.3",
