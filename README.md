@@ -28,8 +28,3 @@ command
 ```bash
 npm -g install nt-cli
 ```
-
-
-# License
-
-MIT
