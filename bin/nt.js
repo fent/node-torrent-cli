@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
-var parser = require('nomnom')()
+const parser = require('nomnom')()
   .script('nt')
   .colors();
 
 parser
   .nocommand()
-  .callback(function() {
+  .callback(() => {
     parser.print(parser.getUsage());
   });
 
 parser
   .command('make')
   .help('Make a torrent')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(make);
   })
   .option('announceList', {
@@ -78,7 +78,7 @@ parser
   .command('edit')
   .help('Read a torrent, edit its metainfo variables, and write it. ' +
         'Can\'t change its files')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(edit);
   })
   .option('announceList', {
@@ -122,7 +122,7 @@ parser
 parser
   .command('infohash')
   .help('Return info hash from torrent')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(infohash);
   })
   .option('file', {
@@ -134,7 +134,7 @@ parser
 parser
   .command('pieces')
   .help('Return piece hashes from torrent')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(pieces);
   })
   .option('file', {
@@ -146,7 +146,7 @@ parser
 parser
   .command('name')
   .help('Return name from torrent')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(torrentname);
   })
   .option('file', {
@@ -158,7 +158,7 @@ parser
 parser
   .command('announce')
   .help('Return announce url from torrent')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(announce);
   })
   .option('file', {
@@ -170,7 +170,7 @@ parser
 parser
   .command('announcelist')
   .help('Return announce-list urls from torrent')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(announcelist);
   })
   .option('file', {
@@ -182,7 +182,7 @@ parser
 parser
   .command('files')
   .help('Return file paths and lengths from torrent')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(files);
   })
   .option('file', {
@@ -194,7 +194,7 @@ parser
 parser
   .command('urllist')
   .help('Return web seed urls from torrent')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(urllist);
   })
   .option('file', {
@@ -206,7 +206,7 @@ parser
 parser
   .command('hashcheck')
   .help('Hash checks torrent file. If no directory is given, will use cwd')
-  .callback(function() {
+  .callback(() => {
     process.nextTick(hashcheck);
   })
   .option('maxFiles', {
@@ -227,12 +227,12 @@ parser
     help     : 'Torrent file to hash check',
   });
     
-var options = parser.parse();
-var fs      = require('fs');
-var path    = require('path');
-var ss      = require('streamspeed');
-var nt      = require('nt');
-var util    = require('./util');
+const options = parser.parse();
+const fs      = require('fs');
+const path    = require('path');
+const ss      = require('streamspeed');
+const nt      = require('nt');
+const util    = require('./util');
 require('colors');
 
 
@@ -248,10 +248,10 @@ function make() {
 
   var tmpOutput = output + '.tmp';
   var hasher = nt.makeWrite(tmpOutput, announce, options.dir,
-                            options.files, options);
+    options.files, options);
   var infohash;
 
-  nt.read(hasher, function(err, torrent) {
+  nt.read(hasher, (err, torrent) => {
     if (err) util.logerr(err);
     infohash = torrent.infoHash();
   });
@@ -259,16 +259,16 @@ function make() {
   console.time('Time taken');
 
   hasher.on('error', util.logerr);
-  hasher.on('progress', function(percent, speed, avg) {
+  hasher.on('progress', (percent, speed, avg) => {
     util.progress(percent, ss.toHuman(avg, 's'));
   });
 
   // Prevent node from exiting.
-  var iid = setInterval(function() {}, 500000);
+  var iid = setInterval(() => {}, 500000);
 
-  hasher.on('end', function() {
+  hasher.on('end', () => {
     clearInterval(iid);
-    fs.rename(tmpOutput, output, function(err) {
+    fs.rename(tmpOutput, output, (err) => {
       if (err) util.logerr(err);
       console.log('\nFinished writing torrent at', output.bold);
       console.log('Info hash:', infohash.bold);
@@ -277,16 +277,16 @@ function make() {
   });
 
   // Clean up on forced exit.
-  process.on('SIGINT', function() {
+  process.on('SIGINT', () => {
     clearInterval(iid);
-    fs.unlink(tmpOutput, function(err) {
+    fs.unlink(tmpOutput, (err) => {
       if (err) util.logerr(err);
       process.stdout.write('\n');
       process.exit(1);
     });
   });
 
-  process.on('SIGTSTP', function() {
+  process.on('SIGTSTP', () => {
     hasher.toggle();
   });
 }
@@ -297,7 +297,7 @@ function edit() {
   if (path.extname(output) !== '.torrent') output += '.torrent';
   var tmpOutput = output + '.tmp';
 
-  nt.read(options.file, function(err, torrent) {
+  nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
 
     // Edit torrent object.
@@ -308,7 +308,7 @@ function edit() {
     }
 
     if (options.announceList) {
-      metadata["announce-list"] = options.announceList;
+      metadata['announce-list'] = options.announceList;
     }
 
     if (options.comment) {
@@ -339,8 +339,8 @@ function edit() {
     var ws = torrent.createWriteStream(tmpOutput);
 
     ws.on('error', util.logerr);
-    ws.on('close', function() {
-      fs.rename(tmpOutput, output, function(err) {
+    ws.on('close', () => {
+      fs.rename(tmpOutput, output, (err) => {
         if (err) util.logerr(err);
 
         console.log('File written to', output.bold);
@@ -351,7 +351,7 @@ function edit() {
 }
 
 function infohash() {
-  nt.read(options.file, function(err, torrent) {
+  nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
 
     console.log(torrent.infoHash());
@@ -359,7 +359,7 @@ function infohash() {
 }
 
 function pieces() {
-  nt.read(options.file, function(err, torrent) {
+  nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
     var piece = 20;
     var len = torrent.metadata.info.pieces.length / piece;
@@ -372,21 +372,21 @@ function pieces() {
 }
 
 function torrentname() {
-  nt.read(options.file, function(err, torrent) {
+  nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
     console.log(torrent.metadata.info.name);
   });
 }
 
 function announce() {
-  nt.read(options.file, function(err, torrent) {
+  nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
     console.log(torrent.metadata.announce);
   });
 }
 
 function announcelist() {
-  nt.read(options.file, function(err, torrent) {
+  nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
     if (torrent.metadata.hasOwnProperty('announce-list'))
       console.log(torrent.metadata['announce-list']);
@@ -394,7 +394,7 @@ function announcelist() {
 }
 
 function files() {
-  nt.read(options.file, function(err, torrent) {
+  nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
     var files = torrent.metadata.info.files;
     if (files) {
@@ -408,7 +408,7 @@ function files() {
 }
 
 function urllist() {
-  nt.read(options.file, function(err, torrent) {
+  nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
     var list = torrent.metadata['url-list'];
     for (var i = 0; list && i < list.length; i++) {
@@ -418,7 +418,7 @@ function urllist() {
 }
 
 function hashcheck() {
-  nt.read(options.file, function(err, torrent) {
+  nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
 
     var hasher = torrent.hashCheck(options.dir, options);
@@ -427,35 +427,35 @@ function hashcheck() {
     hasher.on('error', util.logerr);
 
     var color, avg = 0;
-    hasher.on('progress', function(percent, speed, a) {
+    hasher.on('progress', (percent, speed, a) => {
       avg = a;
     });
 
-    hasher.on('match', function(i, hash, percent) {
+    hasher.on('match', (i, hash, percent) => {
       util.progress(percent, ss.toHuman(avg, 's'), color);
     });
 
     // Change progress bar color to read on match error.
-    hasher.on('matcherror', function() {
+    hasher.on('matcherror', () => {
       color = 'red';
     });
 
-    // Something so node doesn't exit.
-    var iid = setInterval(function() {}, 500000);
+    // Prevent node from exiting.
+    var iid = setInterval(() => {}, 500000);
 
-    hasher.on('end', function() {
+    hasher.on('end', () => {
       clearInterval(iid);
       console.log('\nFinished hash checking torrent');
       console.timeEnd('Time taken');
     });
 
-    process.on('SIGINT', function() {
+    process.on('SIGINT', () => {
       clearInterval(iid);
       process.stdout.write('\n');
       process.exit(1);
     });
 
-    process.on('SIGTSTP', function() {
+    process.on('SIGTSTP', () => {
       hasher.toggle();
     });
   });

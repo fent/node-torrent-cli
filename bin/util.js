@@ -3,9 +3,9 @@
  *
  * @const
  */
-var BAR   = '♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥';
-var NOBAR = '♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡';
-var CLEAR = '                                                  ';
+const BAR   = '♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥';
+const NOBAR = '♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡';
+const CLEAR = '                                                  ';
 
 
 /**
@@ -13,7 +13,7 @@ var CLEAR = '                                                  ';
  *
  * @param (Number) percent
  */
-exports.progress = function(percent, speed, color) {
+exports.progress = (percent, speed, color) => {
   color = color || 'green';
   var rounded = Math.round(percent / 2);
 
@@ -23,8 +23,8 @@ exports.progress = function(percent, speed, color) {
 
   // Print to stdout.
   process.stdout.write(' ['.grey + BAR.substr(0, rounded).bold[color] +
-                       NOBAR.substr(0, 50 - rounded) + '] '.grey +
-                       percent.bold + '%'.grey + ' ' + speed.bold + '  \r');
+    NOBAR.substr(0, 50 - rounded) + '] '.grey +
+    percent.bold + '%'.grey + ' ' + speed.bold + '  \r');
 };
 
 
@@ -33,7 +33,7 @@ exports.progress = function(percent, speed, color) {
  *
  * @param (String) err
  */
-exports.logerr = function(err) {
+exports.logerr = (err) => {
   process.stderr.write('Error: '.bold.red + (err.message || err) + '\n');
   process.exit(1);
 };
@@ -46,14 +46,14 @@ exports.logerr = function(err) {
  * @param (Object) options
  * @return (!String) The main announce URL.
  */
-exports.getAnnounce = function(options) {
+exports.getAnnounce = (options) => {
   var announce;
   if (!options.announceList) return null;
 
   if (options.announceList.length > 1) {
     announce = options.announceList.shift();
     var announceList = [];
-    options.announceList.forEach(function(url, i) {
+    options.announceList.forEach((url, i) => {
       announceList[i] = url;
     });
     options.announceList = announceList;

@@ -3,8 +3,8 @@
  * Run with `node bench.js <file>`
  */
 
-var spawn = require('child_process').spawn;
-var fs    = require('fs');
+const spawn = require('child_process').spawn;
+const fs    = require('fs');
 
 
 if (process.argv.length < 3) {
@@ -13,9 +13,9 @@ if (process.argv.length < 3) {
 }
 
 
-var nt_output = 'nt.torrent';
-var mktorrent_output = 'mktorrent.torrent';
-var file = process.argv[2];
+const nt_output = 'nt.torrent';
+const mktorrent_output = 'mktorrent.torrent';
+const file = process.argv[2];
 
 
 // Cleanaup possible previous test.
@@ -25,7 +25,9 @@ cleanup(mktorrent_output);
 function cleanup(file) {
   try {
     fs.unlinkSync(file);
-  } catch (err) {}
+  } catch (err) {
+    // Do nothing.
+  }
 }
 
 
@@ -33,16 +35,18 @@ function cleanup(file) {
 function nt() {
   console.time('nt');
 
-  var child = spawn('nt', ['make', '-a', 'http://whatever.com',
-                          '-o', nt_output, file]); 
+  var child = spawn('nt', [
+    'make', '-a', 'http://whatever.com',
+    '-o', nt_output, file
+  ]); 
 
-  child.stderr.on('data', function(data) {
+  child.stderr.on('data', (data) => {
     throw new Error(data.toString());
   });
 
   child.stdout.resume();
 
-  child.on('close', function() {
+  child.on('close', () => {
     console.timeEnd('nt');
     mktorrent();
   });
@@ -52,16 +56,18 @@ function nt() {
 // mktorrent
 function mktorrent() {
   console.time('mktorrent');
-  var child = spawn('mktorrent', ['-a', 'http://whatever.com',
-                                  '-o', mktorrent_output, file]); 
+  var child = spawn('mktorrent', [
+    '-a', 'http://whatever.com',
+    '-o', mktorrent_output, file
+  ]); 
   
-  child.stderr.on('data', function(data) {
+  child.stderr.on('data', (data) => {
     throw new Error(data.toString());
   });
 
   child.stdout.resume();
 
-  child.on('close', function() {
+  child.on('close', () => {
     console.timeEnd('mktorrent');
     console.log('Finished');
   });
