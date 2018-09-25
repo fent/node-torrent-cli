@@ -32,10 +32,10 @@ function cleanup(file) {
 
 
 // nt
-function nt() {
+const nt = () => {
   console.time('nt');
 
-  var child = spawn('nt', [
+  const child = spawn('nt', [
     'make', '-a', 'http://whatever.com',
     '-o', nt_output, file
   ]); 
@@ -50,13 +50,13 @@ function nt() {
     console.timeEnd('nt');
     mktorrent();
   });
-}
+};
 
 
 // mktorrent
-function mktorrent() {
+const mktorrent = () => {
   console.time('mktorrent');
-  var child = spawn('mktorrent', [
+  const child = spawn('mktorrent', [
     '-a', 'http://whatever.com',
     '-o', mktorrent_output, file
   ]); 
@@ -71,7 +71,7 @@ function mktorrent() {
     console.timeEnd('mktorrent');
     console.log('Finished');
   });
-}
+};
 
 
 // Start.

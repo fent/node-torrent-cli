@@ -14,7 +14,7 @@ parser
   .command('make')
   .help('Make a torrent')
   .callback(() => {
-    process.nextTick(make);
+    process.nextTick(() => make());
   })
   .option('announceList', {
     abbr     : 'a',
@@ -60,7 +60,7 @@ parser
     full    : 'max-files',
     metavar : 'INT',
     help    : 'Max simultaneous files to open',
-    })
+  })
   .option('dir', {
     abbr    : 'd',
     metavar : 'PATH',
@@ -79,7 +79,7 @@ parser
   .help('Read a torrent, edit its metainfo variables, and write it. ' +
         'Can\'t change its files')
   .callback(() => {
-    process.nextTick(edit);
+    process.nextTick(() => edit());
   })
   .option('announceList', {
     abbr    : 'a',
@@ -123,7 +123,7 @@ parser
   .command('infohash')
   .help('Return info hash from torrent')
   .callback(() => {
-    process.nextTick(infohash);
+    process.nextTick(() => infohash());
   })
   .option('file', {
     position : 1,
@@ -135,7 +135,7 @@ parser
   .command('pieces')
   .help('Return piece hashes from torrent')
   .callback(() => {
-    process.nextTick(pieces);
+    process.nextTick(() => pieces());
   })
   .option('file', {
     position : 1,
@@ -147,7 +147,7 @@ parser
   .command('name')
   .help('Return name from torrent')
   .callback(() => {
-    process.nextTick(torrentname);
+    process.nextTick(() => torrentname());
   })
   .option('file', {
     position : 1,
@@ -159,7 +159,7 @@ parser
   .command('announce')
   .help('Return announce url from torrent')
   .callback(() => {
-    process.nextTick(announce);
+    process.nextTick(() => announce());
   })
   .option('file', {
     position : 1,
@@ -171,7 +171,7 @@ parser
   .command('announcelist')
   .help('Return announce-list urls from torrent')
   .callback(() => {
-    process.nextTick(announcelist);
+    process.nextTick(() => announcelist());
   })
   .option('file', {
     position : 1,
@@ -183,7 +183,7 @@ parser
   .command('files')
   .help('Return file paths and lengths from torrent')
   .callback(() => {
-    process.nextTick(files);
+    process.nextTick(() => files());
   })
   .option('file', {
     position : 1,
@@ -195,7 +195,7 @@ parser
   .command('urllist')
   .help('Return web seed urls from torrent')
   .callback(() => {
-    process.nextTick(urllist);
+    process.nextTick(() => urllist());
   })
   .option('file', {
     position : 1,
@@ -207,7 +207,7 @@ parser
   .command('hashcheck')
   .help('Hash checks torrent file. If no directory is given, will use cwd')
   .callback(() => {
-    process.nextTick(hashcheck);
+    process.nextTick(() => hashcheck());
   })
   .option('maxFiles', {
     abbr    : 'f',
@@ -236,20 +236,19 @@ const util    = require('./util');
 require('colors');
 
 
-function make() {
-  var announce = util.getAnnounce(options);
+const make = () => {
+  const announce = util.getAnnounce(options);
   if (!announce) {
     util.logerr('Must provide at least one announce URL');
   }
 
-  var output =
-    options.output || options.name || options.files[0];
+  let output = options.output || options.name || options.files[0];
   if (path.extname(output) !== '.torrent') output += '.torrent';
 
-  var tmpOutput = output + '.tmp';
-  var hasher = nt.makeWrite(tmpOutput, announce, options.dir,
+  const tmpOutput = output + '.tmp';
+  const hasher = nt.makeWrite(tmpOutput, announce, options.dir,
     options.files, options);
-  var infohash;
+  let infohash;
 
   nt.read(hasher, (err, torrent) => {
     if (err) util.logerr(err);
@@ -264,7 +263,7 @@ function make() {
   });
 
   // Prevent node from exiting.
-  var iid = setInterval(() => {}, 500000);
+  const iid = setInterval(() => {}, 500000);
 
   hasher.on('end', () => {
     clearInterval(iid);
@@ -289,19 +288,19 @@ function make() {
   process.on('SIGTSTP', () => {
     hasher.toggle();
   });
-}
+};
 
-function edit() {
+const edit = () => {
   options.announce = util.getAnnounce(options);
-  var output = options.output || options.file;
+  let output = options.output || options.file;
   if (path.extname(output) !== '.torrent') output += '.torrent';
-  var tmpOutput = output + '.tmp';
+  const tmpOutput = output + '.tmp';
 
   nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
 
     // Edit torrent object.
-    var metadata = torrent.metadata;
+    const metadata = torrent.metadata;
 
     if (options.announce) {
       metadata.announce = options.announce;
@@ -328,7 +327,7 @@ function edit() {
     }
 
     // Add additional `moreInfo` to `info`.
-    for (var moreKey in options.moreInfo) {
+    for (let moreKey in options.moreInfo) {
       // Only add `moreInfo` if it doesn't overwrite `info`.
       if (!Object.prototype.hasOwnProperty.call(metadata.info, moreKey)) {
         metadata.info[moreKey] = options.moreInfo[moreKey];
@@ -336,7 +335,7 @@ function edit() {
     }
 
     // Write new torrent file.
-    var ws = torrent.createWriteStream(tmpOutput);
+    const ws = torrent.createWriteStream(tmpOutput);
 
     ws.on('error', util.logerr);
     ws.on('close', () => {
@@ -348,85 +347,86 @@ function edit() {
     });
 
   });
-}
+};
 
-function infohash() {
+const infohash = () => {
   nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
-
     console.log(torrent.infoHash());
   });
-}
+};
 
-function pieces() {
+const pieces = () => {
   nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
-    var piece = 20;
-    var len = torrent.metadata.info.pieces.length / piece;
-    for (var i = 0; i < len; i++) {
-      var from = i * piece;
-      var to = (i + 1) * piece;
+    const piece = 20;
+    const len = torrent.metadata.info.pieces.length / piece;
+    for (let i = 0; i < len; i++) {
+      const from = i * piece;
+      const to = (i + 1) * piece;
       console.log(torrent.metadata.info.pieces.toString('hex', from, to));
     }
   });
-}
+};
 
-function torrentname() {
+const torrentname = () => {
   nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
     console.log(torrent.metadata.info.name);
   });
-}
+};
 
-function announce() {
+const announce = () => {
   nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
     console.log(torrent.metadata.announce);
   });
-}
+};
 
-function announcelist() {
+const announcelist = () => {
   nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
     if (torrent.metadata.hasOwnProperty('announce-list'))
       console.log(torrent.metadata['announce-list']);
   });
-}
+};
 
-function files() {
+const files = () => {
   nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
-    var files = torrent.metadata.info.files;
+    const files = torrent.metadata.info.files;
     if (files) {
-      for (var i = 0; i < files.length; i++) {
-        console.log(files[i].path, files[i].length);
+      for (let file of files) {
+        console.log(file.path, file.length);
       }
     } else {
       console.log(torrent.metadata.info.name);
     }
   });
-}
+};
 
-function urllist() {
+const urllist = () => {
   nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
-    var list = torrent.metadata['url-list'];
-    for (var i = 0; list && i < list.length; i++) {
-      console.log(list[i]);
+    const list = torrent.metadata['url-list'];
+    if (list) {
+      for (let item of list) {
+        console.log(item);
+      }
     }
   });
-}
+};
 
-function hashcheck() {
+const hashcheck = () => {
   nt.read(options.file, (err, torrent) => {
     if (err) util.logerr(err);
 
-    var hasher = torrent.hashCheck(options.dir, options);
+    const hasher = torrent.hashCheck(options.dir, options);
     console.time('Time taken');
 
     hasher.on('error', util.logerr);
 
-    var color, avg = 0;
+    let color, avg = 0;
     hasher.on('progress', (percent, speed, a) => {
       avg = a;
     });
@@ -441,7 +441,7 @@ function hashcheck() {
     });
 
     // Prevent node from exiting.
-    var iid = setInterval(() => {}, 500000);
+    const iid = setInterval(() => {}, 500000);
 
     hasher.on('end', () => {
       clearInterval(iid);
@@ -459,4 +459,4 @@ function hashcheck() {
       hasher.toggle();
     });
   });
-}
+};

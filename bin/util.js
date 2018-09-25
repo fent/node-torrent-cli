@@ -11,11 +11,11 @@ const CLEAR = '                                                  ';
 /**
  * Prints a progress bar at the given percent.
  *
- * @param (Number) percent
+ * @param {number} percent
  */
 exports.progress = (percent, speed, color) => {
   color = color || 'green';
-  var rounded = Math.round(percent / 2);
+  const rounded = Math.round(percent / 2);
 
   // Pad percent.
   percent = percent.toFixed(2);
@@ -31,7 +31,7 @@ exports.progress = (percent, speed, color) => {
 /**
  * Print any errors to stdout and exit the script.
  *
- * @param (String) err
+ * @param {string} err
  */
 exports.logerr = (err) => {
   process.stderr.write('Error: '.bold.red + (err.message || err) + '\n');
@@ -43,16 +43,16 @@ exports.logerr = (err) => {
  * Separates announce list from command line arguments into
  * main announce URL and additional announce list.
  *
- * @param (Object) options
- * @return (!String) The main announce URL.
+ * @param {Object} options
+ * @return {!string} The main announce URL.
  */
 exports.getAnnounce = (options) => {
-  var announce;
+  let announce;
   if (!options.announceList) return null;
 
   if (options.announceList.length > 1) {
     announce = options.announceList.shift();
-    var announceList = [];
+    const announceList = [];
     options.announceList.forEach((url, i) => {
       announceList[i] = url;
     });
