@@ -23,10 +23,16 @@
     "colors": "^1.0.3",
     "nomnom": "~1.8.0",
     "nt": "*",
-    "streamspeed": "^1.1.0"
+    "streamspeed": "^1.1.0",
+    "snyk": "^1.232.0"
   },
   "engines": {
     "node": ">=4"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
