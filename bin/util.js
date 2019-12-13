@@ -52,12 +52,6 @@ exports.getAnnounce = (options) => {
 
   if (options.announceList.length > 1) {
     announce = options.announceList.shift();
-    const announceList = [];
-    options.announceList.forEach((url, i) => {
-      announceList[i] = url;
-    });
-    options.announceList = announceList;
-
   } else {
     announce = options.announceList[0];
     delete options.announceList;
