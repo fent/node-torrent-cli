@@ -3,9 +3,9 @@
  *
  * @const
  */
-const BAR   = '♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥';
-const NOBAR = '♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡';
-const CLEAR = '                                                  ';
+const BAR   = '♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥';
+const NOBAR = '♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡';
+const CLEAR = '                                        ';
 
 
 /**
@@ -15,7 +15,7 @@ const CLEAR = '                                                  ';
  */
 exports.progress = (percent, speed, color) => {
   color = color || 'green';
-  const rounded = Math.round(percent / 2);
+  const rounded = Math.round(percent / (100 / BAR.length));
 
   // Pad percent.
   percent = percent.toFixed(2);
@@ -23,7 +23,7 @@ exports.progress = (percent, speed, color) => {
 
   // Print to stdout.
   process.stdout.write(' ['.grey + BAR.substr(0, rounded).bold[color] +
-    NOBAR.substr(0, 50 - rounded) + '] '.grey +
+    NOBAR.substr(0, BAR.length - rounded) + '] '.grey +
     percent.bold + '%'.grey + ' ' + speed.bold + '  \r');
 };
 
