@@ -18,21 +18,21 @@ const mktorrent_output = 'mktorrent.torrent';
 const file = process.argv[2];
 
 
-// Cleanaup possible previous test.
-cleanup(nt_output);
-cleanup(mktorrent_output);
-
-function cleanup(file) {
+const cleanup = (file) => {
   try {
     fs.unlinkSync(file);
   } catch (err) {
     // Do nothing.
   }
-}
+};
+
+// Cleanaup possible previous test.
+cleanup(nt_output);
+cleanup(mktorrent_output);
 
 
 // nt
-const nt = () => {
+const nt = async () => new Promise((resolve, reject) => {
   console.time('nt');
 
   const child = spawn('nt', [
@@ -41,20 +41,20 @@ const nt = () => {
   ]); 
 
   child.stderr.on('data', (data) => {
-    throw new Error(data.toString());
+    reject(new Error(data.toString()));
   });
 
   child.stdout.resume();
 
   child.on('close', () => {
     console.timeEnd('nt');
-    mktorrent();
+    resolve();
   });
-};
+});
 
 
 // mktorrent
-const mktorrent = () => {
+const mktorrent = async () => new Promise((resolve, reject) => {
   console.time('mktorrent');
   const child = spawn('mktorrent', [
     '-a', 'http://whatever.com',
@@ -62,18 +62,22 @@ const mktorrent = () => {
   ]); 
   
   child.stderr.on('data', (data) => {
-    throw new Error(data.toString());
+    reject(new Error(data.toString()));
   });
 
   child.stdout.resume();
 
   child.on('close', () => {
     console.timeEnd('mktorrent');
-    console.log('Finished');
+    resolve();
   });
-};
+});
 
 
 // Start.
-console.log('Starting');
-nt();
+(async () => {
+  console.log('Starting');
+  await nt();
+  await mktorrent();
+  console.log('Finished');
+})();
