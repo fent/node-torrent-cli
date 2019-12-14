@@ -1,0 +1,29 @@
+name: Release
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: >
+          npx semantic-release
+          --branch undefined
+          --dry-run
+          --plugins @semantic-release/commit-analyzer
+          --plugins @semantic-release/release-notes-generator
+          --plugins @semantic-release/npm
+          --plugins @semantic-release/github
