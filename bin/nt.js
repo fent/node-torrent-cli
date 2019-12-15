@@ -7,9 +7,9 @@ require('yargs')
   .command('get <field> <torrent>', 'Prints field from torrent', (yargs) => {
     const get = (cb) => (argv) => {
       const nt = require('nt');
-      const util = require('./util');
+      const logerr = require('./logerr');
       nt.read(argv.torrent, (err, torrent) => {
-        if (err) util.logerr(err);
+        if (err) logerr(err);
         const results = cb(torrent);
         if (results) {
           console.log(Array.isArray(results) ? results.join('\n') : results);

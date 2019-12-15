@@ -1,3 +1,6 @@
+require('colors');
+
+
 /**
  * Progress bar constants.
  *
@@ -13,7 +16,7 @@ const CLEAR = '                                        ';
  *
  * @param {number} percent
  */
-exports.progress = (percent, speed, color) => {
+module.exports = (percent, speed, color) => {
   color = color || 'green';
   const rounded = Math.round(percent / (100 / BAR.length));
 
@@ -25,37 +28,4 @@ exports.progress = (percent, speed, color) => {
   process.stdout.write(' ['.grey + BAR.substr(0, rounded).bold[color] +
     NOBAR.substr(0, BAR.length - rounded) + '] '.grey +
     percent.bold + '%'.grey + ' ' + speed.bold + '  \r');
-};
-
-
-/**
- * Print any errors to stdout and exit the script.
- *
- * @param {string} err
- */
-exports.logerr = (err) => {
-  process.stderr.write('Error: '.bold.red + (err.message || err) + '\n');
-  process.exit(1);
-};
-
-
-/**
- * Separates announce list from command line arguments into
- * main announce URL and additional announce list.
- *
- * @param {Object} options
- * @return {!string} The main announce URL.
- */
-exports.getAnnounce = (options) => {
-  let announce;
-  if (!options.announceList) return null;
-
-  if (options.announceList.length > 1) {
-    announce = options.announceList.shift();
-  } else {
-    announce = options.announceList[0];
-    delete options.announceList;
-  }
-
-  return announce;
 };

@@ -15,18 +15,19 @@ exports.builder = {
   },
 };
 exports.handler = (argv) => {
-  const ss   = require('streamspeed');
-  const nt   = require('nt');
-  const util = require('./util');
+  const ss = require('streamspeed');
+  const nt = require('nt');
+  const logerr = require('./logerr');
+  const progressBar = require('./progress-bar');
 
 
   nt.read(argv.torrent, (err, torrent) => {
-    if (err) util.logerr(err);
+    if (err) logerr(err);
 
     const hasher = torrent.hashCheck(argv.dir, argv);
     console.time('Time taken');
 
-    hasher.on('error', util.logerr);
+    hasher.on('error', logerr);
 
     let color, avg = 0;
     hasher.on('progress', (percent, speed, a) => {
@@ -34,7 +35,7 @@ exports.handler = (argv) => {
     });
 
     hasher.on('match', (i, hash, percent) => {
-      util.progress(percent, ss.toHuman(avg, 's'), color);
+      progressBar(percent, ss.toHuman(avg, 's'), color);
     });
 
     // Change progress bar color to read on match error.

@@ -50,15 +50,26 @@ exports.builder = {
   }
 };
 exports.handler = (argv) => {
-  const fs   = require('fs');
+  const fs = require('fs');
   const path = require('path');
-  const ss   = require('streamspeed');
-  const nt   = require('nt');
-  const util = require('./util');
+  const ss = require('streamspeed');
+  const nt = require('nt');
+  const logerr = require('./logerr');
+  const progressBar = require('./progress-bar');
   require('colors');
 
 
-  const announce = util.getAnnounce(argv);
+  const announce = (() => {
+    let announce;
+    if (!argv.announceList) return null;
+    if (argv.announceList.length > 1) {
+      announce = argv.announceList.shift();
+    } else {
+      announce = argv.announceList[0];
+      delete argv.announceList;
+    }
+    return announce;
+  })();
 
   let output = argv.output || argv.name || argv.file;
   if (path.extname(output) !== '.torrent') output += '.torrent';
@@ -69,15 +80,15 @@ exports.handler = (argv) => {
   let infohash;
 
   nt.read(hasher, (err, torrent) => {
-    if (err) util.logerr(err);
+    if (err) logerr(err);
     infohash = torrent.infoHash();
   });
 
   console.time('Time taken');
 
-  hasher.on('error', util.logerr);
+  hasher.on('error', logerr);
   hasher.on('progress', (percent, speed, avg) => {
-    util.progress(percent, ss.toHuman(avg, 's'));
+    progressBar(percent, ss.toHuman(avg, 's'));
   });
 
   // Prevent node from exiting.
@@ -86,7 +97,7 @@ exports.handler = (argv) => {
   hasher.on('end', () => {
     clearInterval(iid);
     fs.rename(tmpOutput, output, (err) => {
-      if (err) util.logerr(err);
+      if (err) logerr(err);
       console.log('\nFinished writing torrent at', output.bold);
       console.log('Info hash:', infohash.bold);
       console.timeEnd('Time taken');
@@ -97,7 +108,7 @@ exports.handler = (argv) => {
   process.on('SIGINT', () => {
     clearInterval(iid);
     fs.unlink(tmpOutput, (err) => {
-      if (err) util.logerr(err);
+      if (err) logerr(err);
       process.stdout.write('\n');
       process.exit(1);
     });

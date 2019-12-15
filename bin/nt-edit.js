@@ -33,10 +33,10 @@ exports.builder = {
   },
 };
 exports.handler = (argv) => {
-  const fs   = require('fs');
+  const fs = require('fs');
   const path = require('path');
-  const nt   = require('nt');
-  const util = require('./util');
+  const nt = require('nt');
+  const logerr = require('./logerr');
   require('colors');
 
 
@@ -45,7 +45,7 @@ exports.handler = (argv) => {
   const tmpOutput = output + '.tmp';
 
   nt.read(argv.torrent, (err, torrent) => {
-    if (err) util.logerr(err);
+    if (err) logerr(err);
 
     // Edit torrent object.
     const metadata = torrent.metadata;
@@ -85,10 +85,10 @@ exports.handler = (argv) => {
     // Write new torrent file.
     const ws = torrent.createWriteStream(tmpOutput);
 
-    ws.on('error', util.logerr);
+    ws.on('error', logerr);
     ws.on('close', () => {
       fs.rename(tmpOutput, output, (err) => {
-        if (err) util.logerr(err);
+        if (err) logerr(err);
 
         console.log('File written to', output.bold);
       });
