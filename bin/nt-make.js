@@ -36,6 +36,11 @@ exports.builder = {
     defaultDescription: 'torrent name',
     normalize: true,
   },
+  yes: {
+    alias: 'y',
+    boolean: true,
+    describe: 'Overwrite without asking'
+  },
   maxFiles: {
     alias: 'f',
     describe: 'Max simultaneous files to open',
@@ -74,7 +79,7 @@ exports.handler = async (argv) => {
 
   let output = argv.output || argv.name || argv.file;
   if (path.extname(output) !== '.torrent') output += '.torrent';
-  if (!await confirmOverwrite(output)) return;
+  if (!argv.yes && !await confirmOverwrite(output)) return;
 
   const tmpOutput = output + '.tmp';
   const hasher = nt.makeWrite(tmpOutput, announce, argv.dir,

@@ -34,6 +34,11 @@ exports.builder = {
     default: '',
     normalize: true,
   },
+  yes: {
+    alias: 'y',
+    boolean: true,
+    describe: 'Overwrite without asking'
+  },
 };
 exports.handler = async (argv) => {
   const fs = require('fs');
@@ -47,7 +52,7 @@ exports.handler = async (argv) => {
   let output = argv.output || argv.torrent;
   if (path.extname(output) !== '.torrent') output += '.torrent';
   const tmpOutput = output + '.tmp';
-  if (!await confirmOverwrite(output)) return;
+  if (!argv.yes && !await confirmOverwrite(output)) return;
 
   nt.read(argv.torrent, (err, torrent) => {
     if (err) logerr(err);
