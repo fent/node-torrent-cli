@@ -1,11 +1,10 @@
-exports.command = 'edit <file>';
+exports.command = 'edit <torrent>';
 exports.describe = 'Edit a torrent\'ts metainfo, can\'t change its files';
 exports.builder = {
   announceList: {
     alias: 'a',
     describe: 'Announce URLs',
     array: true,
-    demandOption: true
   },
   comment: {
     alias: 'c',
@@ -29,8 +28,8 @@ exports.builder = {
     alias: 'o',
     describe: 'Outfile file',
     defaultDescription: 'torrent name',
+    default: '',
     normalize: true,
-    demandOption: true,
   },
 };
 exports.handler = (argv) => {
@@ -42,7 +41,7 @@ exports.handler = (argv) => {
 
 
   argv.announce = util.getAnnounce(argv);
-  let output = argv.output;
+  let output = argv.output || argv.torrent;
   if (path.extname(output) !== '.torrent') output += '.torrent';
   const tmpOutput = output + '.tmp';
 
