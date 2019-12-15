@@ -1,9 +1,12 @@
 exports.command = 'edit <torrent>';
 exports.describe = 'Edit a torrent\'ts metainfo, can\'t change its files';
 exports.builder = {
-  announceList: {
+  announce: {
     alias: 'a',
-    describe: 'Announce URLs',
+    describe: 'Announce URL of the tracker',
+  },
+  announceList: {
+    describe: 'Announce URL list',
     array: true,
   },
   comment: {
