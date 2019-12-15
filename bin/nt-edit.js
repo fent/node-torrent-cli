@@ -40,7 +40,6 @@ exports.handler = (argv) => {
   require('colors');
 
 
-  argv.announce = util.getAnnounce(argv);
   let output = argv.output || argv.torrent;
   if (path.extname(output) !== '.torrent') output += '.torrent';
   const tmpOutput = output + '.tmp';
