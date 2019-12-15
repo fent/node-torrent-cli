@@ -35,17 +35,19 @@ exports.builder = {
     normalize: true,
   },
 };
-exports.handler = (argv) => {
+exports.handler = async (argv) => {
   const fs = require('fs');
   const path = require('path');
   const nt = require('nt');
   const logerr = require('./logerr');
+  const confirmOverwrite = require('./confirm-overwrite');
   require('colors');
 
 
   let output = argv.output || argv.torrent;
   if (path.extname(output) !== '.torrent') output += '.torrent';
   const tmpOutput = output + '.tmp';
+  if (!await confirmOverwrite(output)) return;
 
   nt.read(argv.torrent, (err, torrent) => {
     if (err) logerr(err);
@@ -93,7 +95,7 @@ exports.handler = (argv) => {
       fs.rename(tmpOutput, output, (err) => {
         if (err) logerr(err);
 
-        console.log('File written to', output.bold);
+        console.log(`File written to \`${output.bold}\``);
       });
     });
 

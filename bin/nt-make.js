@@ -49,13 +49,14 @@ exports.builder = {
     defaultDescription: 'cwd',
   }
 };
-exports.handler = (argv) => {
+exports.handler = async (argv) => {
   const fs = require('fs');
   const path = require('path');
   const ss = require('streamspeed');
   const nt = require('nt');
   const logerr = require('./logerr');
   const progressBar = require('./progress-bar');
+  const confirmOverwrite = require('./confirm-overwrite');
   require('colors');
 
 
@@ -73,6 +74,7 @@ exports.handler = (argv) => {
 
   let output = argv.output || argv.name || argv.file;
   if (path.extname(output) !== '.torrent') output += '.torrent';
+  if (!await confirmOverwrite(output)) return;
 
   const tmpOutput = output + '.tmp';
   const hasher = nt.makeWrite(tmpOutput, announce, argv.dir,
@@ -98,7 +100,7 @@ exports.handler = (argv) => {
     clearInterval(iid);
     fs.rename(tmpOutput, output, (err) => {
       if (err) logerr(err);
-      console.log('\nFinished writing torrent at', output.bold);
+      console.log(`\nFinished writing torrent at \`${output.bold}\``);
       console.log('Info hash:', infohash.bold);
       console.timeEnd('Time taken');
     });
