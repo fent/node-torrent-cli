@@ -46,7 +46,7 @@ exports.handler = async (argv) => {
   const nt = require('nt');
   const logerr = require('./logerr');
   const confirmOverwrite = require('./confirm-overwrite');
-  require('colors');
+  const chalk = require('chalk');
 
 
   let output = argv.output || argv.torrent;
@@ -100,7 +100,7 @@ exports.handler = async (argv) => {
       fs.rename(tmpOutput, output, (err) => {
         if (err) logerr(err);
 
-        console.log(`File written to \`${output.bold}\``);
+        console.log(`File written to \`${chalk.bold(output)}\``);
       });
     });
 

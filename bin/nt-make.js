@@ -62,7 +62,7 @@ exports.handler = async (argv) => {
   const logerr = require('./logerr');
   const progressBar = require('./progress-bar');
   const confirmOverwrite = require('./confirm-overwrite');
-  require('colors');
+  const chalk = require('chalk');
 
 
   const announce = (() => {
@@ -105,8 +105,8 @@ exports.handler = async (argv) => {
     clearInterval(iid);
     fs.rename(tmpOutput, output, (err) => {
       if (err) logerr(err);
-      console.log(`\nFinished writing torrent at \`${output.bold}\``);
-      console.log('Info hash:', infohash.bold);
+      console.log(`\nFile written to \`${chalk.bold(output)}\``);
+      console.log('Info hash:', chalk.bold(infohash));
       console.timeEnd('Time taken');
     });
   });

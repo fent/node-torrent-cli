@@ -1,4 +1,4 @@
-require('colors');
+const chalk = require('chalk');
 
 
 /**
@@ -25,7 +25,11 @@ module.exports = (percent, speed, color) => {
   percent = CLEAR.substr(0, 6 - percent.length) + percent;
 
   // Print to stdout.
-  process.stdout.write(' ['.grey + BAR.substr(0, rounded).bold[color] +
-    NOBAR.substr(0, BAR.length - rounded) + '] '.grey +
-    percent.bold + '%'.grey + ' ' + speed.bold + '  \r');
+  process.stdout.write(
+    chalk.gray(' [') +
+    chalk.bold[color](BAR.substr(0, rounded)) +
+    NOBAR.substr(0, BAR.length - rounded) + chalk.gray('] ') +
+    chalk.bold(percent) + chalk.gray('%') + ' ' +
+    chalk.bold(speed) + '  \r'
+  );
 };

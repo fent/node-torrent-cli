@@ -20,7 +20,7 @@
   ],
   "preferGlobal": true,
   "dependencies": {
-    "colors": "^1.4.0",
+    "chalk": "^3.0.0",
     "nt": "*",
     "streamspeed": "^2.0.0",
     "yargs": "^16.0.3",
