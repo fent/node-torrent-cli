@@ -11,13 +11,17 @@
     "type": "git",
     "url": "git://github.com/fent/node-torrent-cli.git"
   },
-  "author": "fent (https://github.com/fent)",
+  "author": "fent <fentbox@gmail.com> (https://github.com/fent)",
   "bin": {
     "nt": "./bin/nt.js"
   },
   "files": [
     "bin"
   ],
+  "scripts": {
+    "test": "nyc --extension .js --reporter=lcov --reporter=text-summary npm run test:unit",
+    "test:unit": "mocha -- test/*-test.ts"
+  },
   "preferGlobal": true,
   "dependencies": {
     "chalk": "^3.0.0",
@@ -25,6 +29,11 @@
     "streamspeed": "^2.0.0",
     "yargs": "^16.0.3",
     "yesno": "^0.3.1"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.2",
+    "nyc": "^15.0.0",
+    "sinon": "^8.0.1"
   },
   "engines": {
     "node": ">=6"
