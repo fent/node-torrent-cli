@@ -22,7 +22,7 @@
   "dependencies": {
     "colors": "^1.4.0",
     "nt": "*",
-    "streamspeed": "^2.0.0",
+    "streamspeed": "^2.0.1",
     "yargs": "^16.0.3"
   },
   "engines": {
