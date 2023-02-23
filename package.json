@@ -23,7 +23,7 @@
     "colors": "^1.4.0",
     "nt": "*",
     "streamspeed": "^2.0.0",
-    "yargs": "^16.0.3"
+    "yargs": "^17.7.1"
   },
   "engines": {
     "node": ">=6"
