@@ -2,7 +2,9 @@
 
 Read, make, and hash check torrents with node.js in the command line!
 
-[![Dependency Status](https://david-dm.org/fent/node-torrent-cli.svg)](https://david-dm.org/fent/node-torrent-cli)
+[![npm](https://img.shields.io/npm/v/nt-cli)](https://www.npmjs.com/package/nt-cli)
+[![Node.js CI](https://github.com/fent/node-torrent-cli/actions/workflows/nodejs.yml/badge.svg)](https://github.com/fent/node-torrent-cli/actions/workflows/nodejs.yml)
+[![codecov](https://codecov.io/gh/fent/node-torrent-cli/branch/master/graph/badge.svg)](https://codecov.io/gh/fent/node-torrent-cli)
 
 ```bash
 Usage: nt [command]
