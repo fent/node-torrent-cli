@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "test": "nyc --extension .js --reporter=lcov --reporter=text-summary npm run test:unit",
-    "test:unit": "mocha -- test/*-test.ts"
+    "test:unit": "mocha -- test/*-test.js"
   },
   "preferGlobal": true,
   "dependencies": {
