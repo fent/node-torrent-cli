@@ -20,7 +20,6 @@ exports.handler = (argv) => {
   const logerr = require('./logerr');
   const progressBar = require('./progress-bar');
 
-
   nt.read(argv.torrent, (err, torrent) => {
     if (err) logerr(err);
 
@@ -29,12 +28,13 @@ exports.handler = (argv) => {
 
     hasher.on('error', logerr);
 
-    let color, avg = 0;
-    hasher.on('progress', (percent, speed, a) => {
+    let color,
+      avg = 0;
+    hasher.on('progress', (_percent, _speed, a) => {
       avg = a;
     });
 
-    hasher.on('match', (i, hash, percent) => {
+    hasher.on('match', (_i, _hash, percent) => {
       progressBar(percent, ss.toHuman(avg, 's'), color);
     });
 

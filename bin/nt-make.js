@@ -5,7 +5,7 @@ exports.builder = {
     alias: 'a',
     describe: 'Announce URLs',
     array: true,
-    demandOption: true
+    demandOption: true,
   },
   comment: {
     alias: 'c',
@@ -39,7 +39,7 @@ exports.builder = {
   yes: {
     alias: 'y',
     boolean: true,
-    describe: 'Overwrite without asking'
+    describe: 'Overwrite without asking',
   },
   maxFiles: {
     alias: 'f',
@@ -52,7 +52,7 @@ exports.builder = {
     normalize: true,
     default: process.cwd(),
     defaultDescription: 'cwd',
-  }
+  },
 };
 exports.handler = async (argv) => {
   const fs = require('fs');
@@ -63,7 +63,6 @@ exports.handler = async (argv) => {
   const progressBar = require('./progress-bar');
   const confirmOverwrite = require('./confirm-overwrite');
   const chalk = require('chalk');
-
 
   const announce = (() => {
     let announce;
@@ -79,11 +78,16 @@ exports.handler = async (argv) => {
 
   let output = argv.output || argv.name || argv.file;
   if (path.extname(output) !== '.torrent') output += '.torrent';
-  if (!argv.yes && !await confirmOverwrite(output)) return;
+  if (!argv.yes && !(await confirmOverwrite(output))) return;
 
   const tmpOutput = output + '.tmp';
-  const hasher = nt.makeWrite(tmpOutput, announce, argv.dir,
-    [argv.file].concat(argv.files), argv);
+  const hasher = nt.makeWrite(
+    tmpOutput,
+    announce,
+    argv.dir,
+    [argv.file].concat(argv.files),
+    argv,
+  );
   let infohash;
 
   nt.read(hasher, (err, torrent) => {
@@ -94,7 +98,7 @@ exports.handler = async (argv) => {
   console.time('Time taken');
 
   hasher.on('error', logerr);
-  hasher.on('progress', (percent, speed, avg) => {
+  hasher.on('progress', (percent, _speed, avg) => {
     progressBar(percent, ss.toHuman(avg, 's'));
   });
 

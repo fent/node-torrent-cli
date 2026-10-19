@@ -1,7 +1,7 @@
-const assert = require('assert');
+const assert = require('node:assert');
 const sinon = require('sinon');
-const fs = require('fs');
-const EventEmitter = require('events');
+const fs = require('node:fs');
+const EventEmitter = require('node:events');
 const nt = require('nt');
 const make = require('../bin/nt-make');
 const hashcheck = require('../bin/nt-hashcheck');
@@ -41,8 +41,12 @@ describe('signals and handler edge cases', () => {
         dir: '.',
       });
 
-      const newSigint = process.listeners('SIGINT').filter(l => !initialSigintListeners.includes(l));
-      const newSigtstp = process.listeners('SIGTSTP').filter(l => !initialSigtstpListeners.includes(l));
+      const newSigint = process
+        .listeners('SIGINT')
+        .filter((l) => !initialSigintListeners.includes(l));
+      const newSigtstp = process
+        .listeners('SIGTSTP')
+        .filter((l) => !initialSigtstpListeners.includes(l));
 
       assert.equal(newSigint.length, 1);
       assert.equal(newSigtstp.length, 1);
@@ -51,12 +55,11 @@ describe('signals and handler edge cases', () => {
       assert.ok(mockHasher.toggle.calledOnce);
 
       newSigint[0]();
-      await new Promise(r => setTimeout(r, 50));
+      await new Promise((r) => setTimeout(r, 50));
       assert.ok(exitStub.calledWith(1));
       assert.ok(!fs.existsSync(tmpFile));
-
-      newSigint.forEach(l => process.removeListener('SIGINT', l));
-      newSigtstp.forEach(l => process.removeListener('SIGTSTP', l));
+      for (const l of newSigint) process.removeListener('SIGINT', l);
+      for (const l of newSigtstp) process.removeListener('SIGTSTP', l);
     });
 
     it('handles SIGINT when unlink errors', async () => {
@@ -66,7 +69,9 @@ describe('signals and handler edge cases', () => {
       sandbox.stub(nt, 'read');
       const exitStub = sandbox.stub(process, 'exit');
       sandbox.stub(process.stdout, 'write');
-      sandbox.stub(fs, 'unlink').callsFake((p, cb) => cb(new Error('unlink err')));
+      sandbox
+        .stub(fs, 'unlink')
+        .callsFake((_p, cb) => cb(new Error('unlink err')));
 
       const initialSigintListeners = process.listeners('SIGINT');
       const initialSigtstpListeners = process.listeners('SIGTSTP');
@@ -79,25 +84,29 @@ describe('signals and handler edge cases', () => {
         dir: '.',
       });
 
-      const newSigint = process.listeners('SIGINT').filter(l => !initialSigintListeners.includes(l));
-      const newSigtstp = process.listeners('SIGTSTP').filter(l => !initialSigtstpListeners.includes(l));
+      const newSigint = process
+        .listeners('SIGINT')
+        .filter((l) => !initialSigintListeners.includes(l));
+      const newSigtstp = process
+        .listeners('SIGTSTP')
+        .filter((l) => !initialSigtstpListeners.includes(l));
 
       newSigint[0]();
-      await new Promise(r => setTimeout(r, 50));
+      await new Promise((r) => setTimeout(r, 50));
       assert.ok(exitStub.calledWith(1));
 
-      newSigint.forEach(l => process.removeListener('SIGINT', l));
-      newSigtstp.forEach(l => process.removeListener('SIGTSTP', l));
+      for (const l of newSigint) process.removeListener('SIGINT', l);
+      for (const l of newSigtstp) process.removeListener('SIGTSTP', l);
     });
 
     it('handles nt.read error and hasher end rename error', async () => {
       const mockHasher = new EventEmitter();
       const mockTorrent = { infoHash: () => 'hash123' };
       sandbox.stub(nt, 'makeWrite').returns(mockHasher);
-      sandbox.stub(nt, 'read').callsFake((hasher, cb) => {
+      sandbox.stub(nt, 'read').callsFake((_hasher, cb) => {
         cb(new Error('read err'), mockTorrent);
       });
-      sandbox.stub(fs, 'rename').callsFake((src, dest, cb) => {
+      sandbox.stub(fs, 'rename').callsFake((_src, _dest, cb) => {
         cb(new Error('rename err'));
       });
       sandbox.stub(process, 'exit');
@@ -115,12 +124,16 @@ describe('signals and handler edge cases', () => {
       });
 
       mockHasher.emit('end');
-      await new Promise(r => setTimeout(r, 50));
+      await new Promise((r) => setTimeout(r, 50));
 
-      const newSigint = process.listeners('SIGINT').filter(l => !initialSigintListeners.includes(l));
-      const newSigtstp = process.listeners('SIGTSTP').filter(l => !initialSigtstpListeners.includes(l));
-      newSigint.forEach(l => process.removeListener('SIGINT', l));
-      newSigtstp.forEach(l => process.removeListener('SIGTSTP', l));
+      const newSigint = process
+        .listeners('SIGINT')
+        .filter((l) => !initialSigintListeners.includes(l));
+      const newSigtstp = process
+        .listeners('SIGTSTP')
+        .filter((l) => !initialSigtstpListeners.includes(l));
+      for (const l of newSigint) process.removeListener('SIGINT', l);
+      for (const l of newSigtstp) process.removeListener('SIGTSTP', l);
     });
 
     it('returns null announce when announceList is not provided', async () => {
@@ -140,12 +153,16 @@ describe('signals and handler edge cases', () => {
       });
 
       mockHasher.emit('end');
-      await new Promise(r => setTimeout(r, 50));
+      await new Promise((r) => setTimeout(r, 50));
 
-      const newSigint = process.listeners('SIGINT').filter(l => !initialSigintListeners.includes(l));
-      const newSigtstp = process.listeners('SIGTSTP').filter(l => !initialSigtstpListeners.includes(l));
-      newSigint.forEach(l => process.removeListener('SIGINT', l));
-      newSigtstp.forEach(l => process.removeListener('SIGTSTP', l));
+      const newSigint = process
+        .listeners('SIGINT')
+        .filter((l) => !initialSigintListeners.includes(l));
+      const newSigtstp = process
+        .listeners('SIGTSTP')
+        .filter((l) => !initialSigtstpListeners.includes(l));
+      for (const l of newSigint) process.removeListener('SIGINT', l);
+      for (const l of newSigtstp) process.removeListener('SIGTSTP', l);
     });
 
     it('executes interval callback with fake timers', async () => {
@@ -175,7 +192,7 @@ describe('signals and handler edge cases', () => {
       const mockTorrent = {
         hashCheck: sandbox.stub().returns(mockHasher),
       };
-      sandbox.stub(nt, 'read').callsFake((file, cb) => {
+      sandbox.stub(nt, 'read').callsFake((_file, cb) => {
         cb(null, mockTorrent);
       });
       const exitStub = sandbox.stub(process, 'exit');
@@ -193,8 +210,12 @@ describe('signals and handler edge cases', () => {
       mockHasher.emit('matcherror');
       mockHasher.emit('match', 0, 'hash', 50);
 
-      const newSigint = process.listeners('SIGINT').filter(l => !initialSigintListeners.includes(l));
-      const newSigtstp = process.listeners('SIGTSTP').filter(l => !initialSigtstpListeners.includes(l));
+      const newSigint = process
+        .listeners('SIGINT')
+        .filter((l) => !initialSigintListeners.includes(l));
+      const newSigtstp = process
+        .listeners('SIGTSTP')
+        .filter((l) => !initialSigtstpListeners.includes(l));
 
       assert.equal(newSigint.length, 1);
       assert.equal(newSigtstp.length, 1);
@@ -205,8 +226,8 @@ describe('signals and handler edge cases', () => {
       newSigint[0]();
       assert.ok(exitStub.calledWith(1));
 
-      newSigint.forEach(l => process.removeListener('SIGINT', l));
-      newSigtstp.forEach(l => process.removeListener('SIGTSTP', l));
+      for (const l of newSigint) process.removeListener('SIGINT', l);
+      for (const l of newSigtstp) process.removeListener('SIGTSTP', l);
     });
 
     it('executes interval callback with fake timers', () => {
@@ -215,7 +236,7 @@ describe('signals and handler edge cases', () => {
       const mockTorrent = {
         hashCheck: sandbox.stub().returns(mockHasher),
       };
-      sandbox.stub(nt, 'read').callsFake((file, cb) => {
+      sandbox.stub(nt, 'read').callsFake((_file, cb) => {
         cb(null, mockTorrent);
       });
       hashcheck.handler({ torrent: 'test.torrent', dir: '.' });
@@ -231,14 +252,18 @@ describe('signals and handler edge cases', () => {
       const mockTorrent = {
         metadata: {
           announce: 'http://a.com',
-          info: { name: 'pkg', files: [{ path: 'pkg', length: 100 }], private: 1 },
+          info: {
+            name: 'pkg',
+            files: [{ path: 'pkg', length: 100 }],
+            private: 1,
+          },
         },
         createWriteStream: sandbox.stub().returns(mockWs),
       };
-      sandbox.stub(nt, 'read').callsFake((file, cb) => {
+      sandbox.stub(nt, 'read').callsFake((_file, cb) => {
         cb(null, mockTorrent);
       });
-      sandbox.stub(fs, 'rename').callsFake((src, dest, cb) => {
+      sandbox.stub(fs, 'rename').callsFake((_src, _dest, cb) => {
         cb(new Error('rename err'));
       });
       sandbox.stub(process, 'exit');

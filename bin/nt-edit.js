@@ -1,5 +1,5 @@
 exports.command = 'edit <torrent>';
-exports.describe = 'Edit a torrent\'ts metainfo, can\'t change its files';
+exports.describe = "Edit a torrent'ts metainfo, can't change its files";
 exports.builder = {
   announce: {
     alias: 'a',
@@ -37,7 +37,7 @@ exports.builder = {
   yes: {
     alias: 'y',
     boolean: true,
-    describe: 'Overwrite without asking'
+    describe: 'Overwrite without asking',
   },
 };
 exports.handler = async (argv) => {
@@ -48,11 +48,10 @@ exports.handler = async (argv) => {
   const confirmOverwrite = require('./confirm-overwrite');
   const chalk = require('chalk');
 
-
   let output = argv.output || argv.torrent;
   if (path.extname(output) !== '.torrent') output += '.torrent';
   const tmpOutput = output + '.tmp';
-  if (!argv.yes && !await confirmOverwrite(output)) return;
+  if (!argv.yes && !(await confirmOverwrite(output))) return;
 
   nt.read(argv.torrent, (err, torrent) => {
     if (err) logerr(err);
@@ -85,9 +84,9 @@ exports.handler = async (argv) => {
     }
 
     // Add additional `moreInfo` to `info`.
-    for (let moreKey in argv.moreInfo) {
+    for (const moreKey in argv.moreInfo) {
       // Only add `moreInfo` if it doesn't overwrite `info`.
-      if (!Object.prototype.hasOwnProperty.call(metadata.info, moreKey)) {
+      if (!Object.hasOwn(metadata.info, moreKey)) {
         metadata.info[moreKey] = argv.moreInfo[moreKey];
       }
     }
@@ -103,6 +102,5 @@ exports.handler = async (argv) => {
         console.log(`File written to \`${chalk.bold(output)}\``);
       });
     });
-
   });
 };

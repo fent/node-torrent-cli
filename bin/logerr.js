@@ -1,6 +1,5 @@
 const chalk = require('chalk');
 
-
 /**
  * Print any errors to stdout with colors and exit the script.
  *

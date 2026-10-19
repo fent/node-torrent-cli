@@ -19,6 +19,8 @@
     "bin"
   ],
   "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "test": "nyc --extension .js --reporter=lcov --reporter=text-summary npm run test:unit",
     "test:unit": "mocha -- test/*-test.js"
   },
@@ -31,6 +33,7 @@
     "yesno": "^0.3.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.15",
     "mocha": "^6.2.2",
     "nyc": "^15.0.0",
     "sinon": "^8.0.1"

@@ -8,14 +8,19 @@ const pkg = require('../package.json');
 
 const run = (args, options = {}) => {
   return new Promise((resolve, reject) => {
-    const child = execFile(process.execPath, [BIN, ...args], { cwd: __dirname, ...options }, (err, stdout, stderr) => {
-      if (err) {
-        err.stdout = stdout;
-        err.stderr = stderr;
-        return reject(err);
-      }
-      resolve({ stdout, stderr });
-    });
+    const child = execFile(
+      process.execPath,
+      [BIN, ...args],
+      { cwd: __dirname, ...options },
+      (err, stdout, stderr) => {
+        if (err) {
+          err.stdout = stdout;
+          err.stderr = stderr;
+          return reject(err);
+        }
+        resolve({ stdout, stderr });
+      },
+    );
     if (options.input) {
       child.stdin.write(options.input);
       child.stdin.end();
@@ -67,8 +72,10 @@ describe('nt cli', () => {
     const { stdout } = await run([
       'make',
       testFile,
-      '-a', 'http://tracker.example.com/announce',
-      '-o', torrentFile,
+      '-a',
+      'http://tracker.example.com/announce',
+      '-o',
+      torrentFile,
       '-y',
     ]);
     assert.ok(stdout.includes('File written to'));
@@ -80,8 +87,10 @@ describe('nt cli', () => {
     const { stdout } = await run([
       'make',
       testFile,
-      '-a', 'http://tracker.example.com/announce',
-      '-o', 'fresh.torrent',
+      '-a',
+      'http://tracker.example.com/announce',
+      '-o',
+      'fresh.torrent',
     ]);
     assert.ok(stdout.includes('File written to'));
     assert.ok(fs.existsSync(path.join(__dirname, 'fresh.torrent')));
@@ -105,7 +114,9 @@ describe('nt cli', () => {
   it('gets torrent announce-list', async () => {
     const bncode = require('bncode');
     const decoded = bncode.decode(fs.readFileSync(torrentFilePath));
-    decoded['announce-list'] = [[Buffer.from('http://tracker.example.com/announce')]];
+    decoded['announce-list'] = [
+      [Buffer.from('http://tracker.example.com/announce')],
+    ];
     fs.writeFileSync(torrentFilePath, bncode.encode(decoded));
     const { stdout } = await run(['get', 'announce-list', torrentFile]);
     assert.ok(stdout.includes('http://tracker.example.com/announce'));
@@ -130,23 +141,31 @@ describe('nt cli', () => {
     const { stdout } = await run([
       'edit',
       torrentFile,
-      '-a', 'http://newtracker.example.com/announce',
-      '-c', 'my test comment',
+      '-a',
+      'http://newtracker.example.com/announce',
+      '-c',
+      'my test comment',
       '-p',
-      '-s.customField', 'customValue',
+      '-s.customField',
+      'customValue',
       '-y',
     ]);
     assert.ok(stdout.includes('File written to'));
     const announceRes = await run(['get', 'announce', torrentFile]);
-    assert.equal(announceRes.stdout.trim(), 'http://newtracker.example.com/announce');
+    assert.equal(
+      announceRes.stdout.trim(),
+      'http://newtracker.example.com/announce',
+    );
   });
 
   it('edits torrent announceList', async () => {
     const { stdout } = await run([
       'edit',
       torrentFile,
-      '--announceList', 'http://custom-tracker.example.com',
-      '-o', 'ann-edit.torrent',
+      '--announceList',
+      'http://custom-tracker.example.com',
+      '-o',
+      'ann-edit.torrent',
       '-y',
     ]);
     assert.ok(stdout.includes('File written to'));
@@ -159,11 +178,15 @@ describe('nt cli', () => {
       'make',
       testFile,
       'file2.txt',
-      '-a', 'http://tracker1.example.com/announce',
-      '-c', 'multi comment',
+      '-a',
+      'http://tracker1.example.com/announce',
+      '-c',
+      'multi comment',
       '-p',
-      '-s.url-list', 'http://webseed.example.com',
-      '-o', 'multi.torrent',
+      '-s.url-list',
+      'http://webseed.example.com',
+      '-o',
+      'multi.torrent',
       '-y',
     ]);
     assert.ok(stdout.includes('File written to'));
@@ -174,8 +197,10 @@ describe('nt cli', () => {
     const { stdout } = await run([
       'make',
       testFile,
-      '-a', 'http://tracker.example.com/announce',
-      '-n', 'custom-name',
+      '-a',
+      'http://tracker.example.com/announce',
+      '-n',
+      'custom-name',
       '-y',
     ]);
     assert.ok(stdout.includes('File written to'));
@@ -184,16 +209,30 @@ describe('nt cli', () => {
 
   it('prompts user and aborts overwrite when answering no', async () => {
     const { stdout } = await run(
-      ['make', testFile, '-a', 'http://tracker.example.com/announce', '-o', torrentFile],
-      { input: 'no\n' }
+      [
+        'make',
+        testFile,
+        '-a',
+        'http://tracker.example.com/announce',
+        '-o',
+        torrentFile,
+      ],
+      { input: 'no\n' },
     );
     assert.ok(stdout.includes('already exists, overwrite it?'));
   });
 
   it('prompts user and overwrites when answering yes', async () => {
     const { stdout } = await run(
-      ['make', testFile, '-a', 'http://tracker.example.com/announce', '-o', torrentFile],
-      { input: 'yes\n' }
+      [
+        'make',
+        testFile,
+        '-a',
+        'http://tracker.example.com/announce',
+        '-o',
+        torrentFile,
+      ],
+      { input: 'yes\n' },
     );
     assert.ok(stdout.includes('already exists, overwrite it?'));
     assert.ok(stdout.includes('File written to'));
@@ -212,9 +251,25 @@ describe('nt cli', () => {
 
   it('hashchecks torrent with matcherror on corrupted file', async () => {
     fs.writeFileSync(path.join(__dirname, 'corrupt.txt'), 'original content');
-    await run(['make', 'corrupt.txt', '-a', 'http://tracker.example.com/announce', '-o', 'corrupt.torrent', '-y']);
-    fs.writeFileSync(path.join(__dirname, 'corrupt.txt'), 'modified content 123');
-    const { stdout } = await run(['hashcheck', 'corrupt.torrent', '-d', __dirname]);
+    await run([
+      'make',
+      'corrupt.txt',
+      '-a',
+      'http://tracker.example.com/announce',
+      '-o',
+      'corrupt.torrent',
+      '-y',
+    ]);
+    fs.writeFileSync(
+      path.join(__dirname, 'corrupt.txt'),
+      'modified content 123',
+    );
+    const { stdout } = await run([
+      'hashcheck',
+      'corrupt.torrent',
+      '-d',
+      __dirname,
+    ]);
     assert.ok(stdout.includes('Finished hash checking torrent'));
   });
 
@@ -222,8 +277,10 @@ describe('nt cli', () => {
     const { stdout } = await run([
       'edit',
       'multi.torrent',
-      '-n', 'renamed-multi',
-      '-a', 'http://alt1.com/announce',
+      '-n',
+      'renamed-multi',
+      '-a',
+      'http://alt1.com/announce',
       '-p',
       '-y',
     ]);
@@ -233,15 +290,17 @@ describe('nt cli', () => {
   });
 
   it('aborts edit when output exists and user says no', async () => {
-    const { stdout } = await run(
-      ['edit', torrentFile, '-o', torrentFile],
-      { input: 'no\n' }
-    );
+    const { stdout } = await run(['edit', torrentFile, '-o', torrentFile], {
+      input: 'no\n',
+    });
     assert.ok(stdout.includes('already exists, overwrite it?'));
   });
 
   it('handles invalid torrent file on get', async () => {
-    fs.writeFileSync(path.join(__dirname, 'invalid.torrent'), 'not bencoded data');
+    fs.writeFileSync(
+      path.join(__dirname, 'invalid.torrent'),
+      'not bencoded data',
+    );
     try {
       await run(['get', 'name', 'invalid.torrent']);
       assert.fail('should have failed');

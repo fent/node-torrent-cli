@@ -1,15 +1,13 @@
 const chalk = require('chalk');
 
-
 /**
  * Progress bar constants.
  *
  * @const
  */
-const BAR   = '♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥';
+const BAR = '♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥';
 const NOBAR = '♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡';
 const CLEAR = '                                        ';
-
 
 /**
  * Prints a progress bar at the given percent.
@@ -27,9 +25,13 @@ module.exports = (percent, speed, color) => {
   // Print to stdout.
   process.stdout.write(
     chalk.gray(' [') +
-    chalk.bold[color](BAR.substr(0, rounded)) +
-    NOBAR.substr(0, BAR.length - rounded) + chalk.gray('] ') +
-    chalk.bold(percent) + chalk.gray('%') + ' ' +
-    chalk.bold(speed) + '  \r'
+      chalk.bold[color](BAR.substr(0, rounded)) +
+      NOBAR.substr(0, BAR.length - rounded) +
+      chalk.gray('] ') +
+      chalk.bold(percent) +
+      chalk.gray('%') +
+      ' ' +
+      chalk.bold(speed) +
+      '  \r',
   );
 };
